@@ -38,9 +38,18 @@ Luego de asegurarnos que esto ya esta creado se realiza
 javac -d bin src/analizadorLexico/*.java
 ```
 
+Ademas para trabajar con el Analizador sintactico se tiene que usar
+```cmd
+java -jar java-cup-11b.jar -parser Parser -symbols Sym src/analizadorLexico/Parser.cup
+```
+
+```cmd
+javac -cp .;java-cup-11b-runtime.jar -d bin src/analizadorLexico/*.java
+```
+
 Para generar todas las clases y finalmente se usa
 ```cmd
-java -cp bin analizadorLexico.Main
+java -cp bin;java-cup-11b-runtime.jar Main
 ```
 
 Para hacer que este compile
