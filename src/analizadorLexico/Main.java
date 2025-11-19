@@ -38,26 +38,59 @@ public class Main {
             Identificador.clear();
             Constante.clear();
             PalabraClave.clear();
-            // Input
-            System.out.println("Escribe una entrada (Enter para procesar, línea vacía para salir):");
-            System.out.print("> ");
-            String linea = sc.nextLine();
-
-            // Si la entrada esta vacia, se sale del programa
-            if (linea.isEmpty()) {
-                System.out.println("Saliendo...");
-                break;
+            
+            // Input de múltiples líneas
+            System.out.println("Escribe tu entrada (múltiples líneas permitidas):");
+            System.out.println("Para procesar: presiona Enter en una línea vacía");
+            System.out.println("Para salir: escribe 'SALIR' en una línea vacía");
+            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            
+            StringBuilder entradaCompleta = new StringBuilder();
+            String linea;
+            
+            while (true) {
+                System.out.print("> ");
+                linea = sc.nextLine();
+                
+                // Si escriben SALIR en una línea vacía, terminar programa
+                if (linea.trim().equalsIgnoreCase("SALIR")) {
+                    System.out.println("Saliendo...");
+                    sc.close();
+                    return;
+                }
+                
+                // Si la línea está vacía, procesar la entrada acumulada
+                if (linea.isEmpty()) {
+                    if (entradaCompleta.length() == 0) {
+                        System.out.println("No se ingresó ningún texto. Intenta de nuevo.\n");
+                        break;
+                    }
+                    // Salir del bucle de entrada para procesar
+                    break;
+                }
+                
+                // Agregar la línea a la entrada completa
+                entradaCompleta.append(linea).append("\n");
             }
+            
+            // Si no hay entrada, continuar al siguiente ciclo
+            if (entradaCompleta.length() == 0) {
+                continue;
+            }
+            
+            String textoCompleto = entradaCompleta.toString();
 
             // Limpiar la terminal
             System.out.print("\033[H\033[2J");
             System.out.flush();
 
             // Se muestra el texto
-            System.out.println("Texto ingresado:\n> " + linea);
+            System.out.println("Texto ingresado:");
+            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            System.out.println(textoCompleto);
             System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
-            Analizador lexer = new Analizador(new StringReader(linea));
+            Analizador lexer = new Analizador(new StringReader(textoCompleto));
             String token;
             	
             // Se muestran los token
@@ -83,7 +116,5 @@ public class Main {
             System.out.println("Constantes :"+Constante );
             System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
         }
-
-        sc.close();
     }
 }
