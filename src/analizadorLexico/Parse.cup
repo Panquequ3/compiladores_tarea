@@ -1,0 +1,52 @@
+import java_cup.runtime.*;
+
+parser code {
+    public static void main(String[] args) throws Exception {
+        Lexer lexer = new Lexer(System.in);
+        Parser parser = new Parser(lexer);
+        parser.parse();
+        System.out.println("Parseo Completo");
+    }
+}
+
+terminal IDENTIFICADOR, ID_VALOR ,NUMERO, PARTIR, CREAR, INSERTAR, ELIMINAR, DATO, ASIGNAR, FINALIZAR;
+
+nonterminal S, inst, x;
+
+S ::= PARTIR inst FINALIZAR
+;
+
+inst ::= inst inst
+    | inst_asign
+    | inst_crear
+    | inst_dato
+    | inst_eliminar
+    | inst_insertar
+    | inst_ver
+;
+
+inst_asign ::= ASIGNAR ID_VALOR=x 
+{: 
+    symtab.put($1,$3);
+    System.out.println("Asignacion de "+ $1 + " = " + $3);
+:} 
+;
+
+inst_crear ::= CREAR(IDENTIFICADOR,x,x,x,x,x,x,x,x)
+;
+
+inst_dato ::= DATO(IDENTIFICADOR,NUMERO)
+;
+
+inst_eliminar ::= ELIMINAR(IDENTIFICADOR,NUMERO)
+;
+
+inst_insertar ::= INSERTAR(IDENTIFICADOR,x,NUMERO)
+;
+
+inst_ver :: VER(IDENTIFICADOR)
+;
+
+x ::= ID_VALOR {: RESULT = $1; :}
+    | NUMERO {: RESULT = $1; :}
+;

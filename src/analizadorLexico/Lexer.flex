@@ -30,9 +30,11 @@ ESPACIO = [ \t\r\n]+
 "DATO"   { return "DATO";}
 "ASIGNAR"   { return "ASIGNAR";}
 "FINALIZAR"   { return "FINALIZAR";}
+"VER"	{return "VER";}
 
 // Identificadores (no coincide con palabras clave)
 L({LETRA}*{DIGITO}+)   { return "IDENTIFICADOR"; }
+{LETRA} ({LETRA}|{DIGITO})* { return "ID_VALOR";}
 
 // Números
 {DIGITO}+   { return "NUMERO"; }
