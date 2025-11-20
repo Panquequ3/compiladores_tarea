@@ -1,7 +1,3 @@
-Aquí tienes todo en **Markdown limpio, ordenado y listo para entregar**:
-
----
-
 # Tarea Compiladores
 
 ## Especificación de la tarea
@@ -13,7 +9,12 @@ El lenguaje **LMA** posee los siguientes tokens:
 
 * **Identificadores:**
   Comienzan con la letra `L` y pueden contener más letras, finalizando siempre con un número entero.
+  Estos identificadores son especificamente para listas.
   Ejemplos: `L2`, `L34`, `Las3`
+
+* **Identificadores de Constantes:**
+  Comienzan con cualquier otra letra aparte de la L y cualquier combinacion de letras y numeros.
+  Ejemplos: `Lart`, `A`, `X`
 
 * **Constantes enteras**
 
@@ -21,8 +22,6 @@ El lenguaje **LMA** posee los siguientes tokens:
   `(` `)` `=` `,`
 
 El programa se ingresa por pantalla y la salida se genera por pantalla.
-
----
 
 ## Tarea realizada
 
@@ -33,7 +32,8 @@ Se asumió que las palabras reservadas se escriben **exclusivamente en mayúscul
 
 También se utilizó **Java CUP** para el analizador sintáctico, generando las clases necesarias para el parser.
 
----
+En el archivo Main se estan tratando las condiciones de PARTIR inst FINALIZAR para poder ejecutar las lineas en el momento y mostrar su resultado en el momento.
+En caso de querer editar esto, en el mismo archivo Parse.cup se encuentra la linea para cambiarlo a como era anteriormente y hay que adaptar el Main.java para que se pueda escribir todas las lineas y mostrar el resultado.
 
 ## Requisitos previos
 
