@@ -14,7 +14,7 @@ import java_cup.runtime.XMLElement;
 public class Parser extends java_cup.runtime.lr_parser {
 
  public final Class getSymbolContainer() {
-    return sym.class;
+    return Sym.class;
 }
 
   /** Default constructor. */
