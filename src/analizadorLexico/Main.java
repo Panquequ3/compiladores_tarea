@@ -25,7 +25,12 @@ public class Main {
                     yaPartio = true;
                 } else {
                     System.out.println("Error: debes comenzar con PARTIR");
-                    continue;
+                    return;
+                }
+            }else if(yaPartio){
+                if(linea.equalsIgnoreCase("PARTIR")) {
+                    System.out.println("Error: se esperaba una instruccion o FINALIZAR");
+                    return;
                 }
             } else if(linea.equalsIgnoreCase("FINALIZAR")) {
                 break;
