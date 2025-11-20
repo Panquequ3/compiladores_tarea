@@ -1,55 +1,121 @@
+Aquí tienes todo en **Markdown limpio, ordenado y listo para entregar**:
+
+---
+
 # Tarea Compiladores
-## Especificacion de la tarea
-El lenguaje LMA, posee los siguientes tokens:
 
-· Palabras reservadas: PARTIR, CREAR, INSERTAR, ELIMINAR, DATO, ASIGNAR, FINALIZAR
+## Especificación de la tarea
 
-· Identificadores: comienzan con la letra L y a continuación pueden tener más letras, para finalizar con un numero entero. (L2, L34, Las3)
+El lenguaje **LMA** posee los siguientes tokens:
 
-· Constantes enteras
+* **Palabras reservadas:**
+  `PARTIR`, `CREAR`, `INSERTAR`, `ELIMINAR`, `DATO`, `ASIGNAR`, `FINALIZAR`
 
-· Símbolos: ( ) = ,
+* **Identificadores:**
+  Comienzan con la letra `L` y pueden contener más letras, finalizando siempre con un número entero.
+  Ejemplos: `L2`, `L34`, `Las3`
 
+* **Constantes enteras**
 
-El programa se ingresa por pantalla y la salida se produce también por pantalla
+* **Símbolos:**
+  `(` `)` `=` `,`
+
+El programa se ingresa por pantalla y la salida se genera por pantalla.
+
+---
 
 ## Tarea realizada
-Se utilizo JFlex para poder hacer la tarea, donde el archivo **Lexer.flex** contiene el lenguaje completo para poder hacer funcionar el codigo completo.
 
-Se asumio que las palabras reservadas son exclusivamente mayusculas y no alguna variacion de estas.
+Se utilizó **JFlex** para construir el analizador léxico del lenguaje LMA.
+El archivo **Lexer.flex** contiene todas las reglas del lenguaje y produce la clase `Analizador.java`.
+
+Se asumió que las palabras reservadas se escriben **exclusivamente en mayúsculas**, sin variaciones.
+
+También se utilizó **Java CUP** para el analizador sintáctico, generando las clases necesarias para el parser.
+
+---
 
 ## Requisitos previos
-- Tener instalado JDK actual
-- En caso de no poseer jflex dentro de la carpeta, descargar la version 1.9.1 y dejar la libreria dentro
 
-## Forma de compilar
+* Contar con un **JDK** actual instalado.
+* Tener los siguientes archivos `.jar` en el directorio raíz del proyecto:
 
-Para poder ejecutar todo este codigo se realiza desde consola.
+  * `jflex-full-1.9.1.jar`
+  * `java-cup-11b.jar`
+  * `java-cup-11b-runtime.jar`
 
-Primero se tiene que compilar el .flex para obtener la clase que sirve para ejecutar en el main. Para esto se realiza 
+### Estructura recomendada del proyecto
+
+```
+/compiladores_tarea
+ ├─ src/
+ │   └─ analizadorLexico/
+ │        ├─ Lexer.flex
+ │        ├─ Parse.cup
+ │        ├─ Main.java
+ │        ├─ (Archivos generados por JFlex y CUP)
+ ├─ bin/
+ ├─ jflex-full-1.9.1.jar
+ ├─ java-cup-11b.jar
+ ├─ java-cup-11b-runtime.jar
+```
+
+# Forma de compilar
+
+Todos los comandos deben ejecutarse desde el directorio raíz del proyecto.
+
+
+## 1. Generar el Analizador Léxico (JFlex)
+
 ```cmd
 java -jar jflex-full-1.9.1.jar src/analizadorLexico/Lexer.flex
 ```
 
-y asi se obtiene el Analizador.java
+Esto genera:
 
-Luego de asegurarnos que esto ya esta creado se realiza
-```cmd
-javac -d bin src/analizadorLexico/*.java
+```
+src/analizadorLexico/Analizador.java
 ```
 
-Ademas para trabajar con el Analizador sintactico se tiene que usar
-```cmd
-java -jar java-cup-11b.jar -parser Parser -symbols Sym -destdir src/analizadorLexico src/analizadorLexico/Parse.cup
-```
+
+## 2. Generar el Analizador Sintáctico (Java CUP)
 
 ```cmd
-javac -cp .;java-cup-11b-runtime.jar -d bin src/analizadorLexico/*.java
+java -jar java-cup-11b.jar -parser Parser -symbols sym -destdir src/analizadorLexico src/analizadorLexico/Parse.cup
+```
+Esto genera:
+
+```
+src/analizadorLexico/Parser.java
+src/analizadorLexico/sym.java
 ```
 
-Para generar todas las clases y finalmente se usa
+
+## 3. Compilar todos los archivos .java
+
+### En Windows CMD
+
 ```cmd
-java -cp bin;java-cup-11b-runtime.jar Main
+javac -cp .;java-cup-11b.jar;java-cup-11b-runtime.jar -d bin src/analizadorLexico/*.java
 ```
 
-Para hacer que este compile
+### En PowerShell (obligatorio usar comillas)
+
+```powershell
+javac -cp ".;java-cup-11b.jar;java-cup-11b-runtime.jar" -d bin src/analizadorLexico/*.java
+```
+
+
+## 4. Ejecutar el programa
+
+### CMD
+
+```cmd
+java -cp bin;java-cup-11b-runtime.jar analizadorLexico.Main
+```
+
+### PowerShell
+
+```powershell
+java -cp "bin;java-cup-11b-runtime.jar" analizadorLexico.Main
+```

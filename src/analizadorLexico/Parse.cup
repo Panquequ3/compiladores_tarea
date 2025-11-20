@@ -1,135 +1,106 @@
+package analizadorLexico;
 import java_cup.runtime.*;
 
 parser code {:
     java.util.HashMap<String, Object> symtab = new java.util.HashMap<>();
 
     public static void main(String[] args) throws Exception {
-        Lexer lexer = new Lexer(System.in);
+        Analizador lexer = new Analizador(new java.io.InputStreamReader(System.in));
         Parser parser = new Parser(lexer);
         parser.parse();
         System.out.println("Parseo Completo");
     }
 :};
 
-terminal PARTIR, CREAR, INSERTAR, ELIMINAR, DATO, ASIGNAR, FINALIZAR, VER;
-terminal PARENTESIS_IZQ, PARENTESIS_DER, COMA, IGUAL;
+scan with {:
+    return getScanner().next_token();
+:};
 
-terminal String IDENTIFICADOR;
-terminal String ID_VALOR;
+
+terminal String PARTIR, CREAR, INSERTAR, ELIMINAR, DATO, ASIGNAR, FINALIZAR, VER;
+terminal String PARENTESIS_IZQ, PARENTESIS_DER, COMA, IGUAL, DESCONOCIDO;
+
+terminal String IDENTIFICADOR; // Identificadores de listas
+terminal String IDVALOR;       // Identificadores generales
 terminal Integer NUMERO;
 
 nonterminal S, inst, inst_item, inst_asign, inst_crear, inst_dato, inst_eliminar, inst_insertar, inst_ver, x;
 
+start with S;
 
-
-S ::= PARTIR inst FINALIZAR
-;
+S ::= PARTIR inst FINALIZAR;
 
 inst ::= inst inst_item
-       | inst_item
-       ;
+       | inst_item;
 
-inst_item ::=
-     inst_asign
-    | inst_crear
-    | inst_dato
-    | inst_eliminar
-    | inst_insertar
-    | inst_ver
-;
+inst_item ::= inst_asign
+            | inst_crear
+            | inst_dato
+            | inst_eliminar
+            | inst_insertar
+            | inst_ver;
 
-inst_asign ::= ASIGNAR ID_VALOR IGUAL x 
-{: 
-    Object val4 = ($4 instanceof String && symtab.containsKey($4)) ? symtab.get($4) : $4;
-    symtab.put($2, val4);
-:} 
-;
+inst_asign ::= ASIGNAR IDVALOR:idn IGUAL x:idx 
+{:
+    Object val4 = (idx instanceof String && symtab.containsKey(idx)) ? symtab.get(idx) : idx;
+    symtab.put(idn, val4);
+:};
 
 inst_crear ::= CREAR
     PARENTESIS_IZQ
-    IDENTIFICADOR COMA x COMA x COMA x COMA x COMA x COMA x COMA x COMA x
+    IDENTIFICADOR:id COMA x:idx1 COMA x:idx2 COMA x:idx3 COMA x:idx4 COMA x:idx5 COMA x:idx6 COMA x:idx7 COMA x:idx8
     PARENTESIS_DER
-
 {:
     java.util.ArrayList<Object> params = new java.util.ArrayList<>();
-    
-    // Resolver referencias a variables
-    Object val5 = ($5 instanceof String && symtab.containsKey($5)) ? symtab.get($5) : $5;
-    Object val7 = ($7 instanceof String && symtab.containsKey($7)) ? symtab.get($7) : $7;
-    Object val9 = ($9 instanceof String && symtab.containsKey($9)) ? symtab.get($9) : $9;
-    Object val11 = ($11 instanceof String && symtab.containsKey($11)) ? symtab.get($11) : $11;
-    Object val13 = ($13 instanceof String && symtab.containsKey($13)) ? symtab.get($13) : $13;
-    Object val15 = ($15 instanceof String && symtab.containsKey($15)) ? symtab.get($15) : $15;
-    Object val17 = ($17 instanceof String && symtab.containsKey($17)) ? symtab.get($17) : $17;
-    Object val19 = ($19 instanceof String && symtab.containsKey($19)) ? symtab.get($19) : $19;
-    
-    params.add(val5);
-    params.add(val7);
-    params.add(val9);
-    params.add(val11);
-    params.add(val13);
-    params.add(val15);
-    params.add(val17);
-    params.add(val19);
-
-    symtab.put($3,params);
-:}
-;
+    params.add(idx1); params.add(idx2); params.add(idx3); params.add(idx4);
+    params.add(idx5); params.add(idx6); params.add(idx7); params.add(idx8);
+    symtab.put(id, params);
+:};
 
 inst_dato ::= DATO
-PARENTESIS_IZQ
-IDENTIFICADOR COMA NUMERO
-PARENTESIS_DER 
+    PARENTESIS_IZQ
+    IDENTIFICADOR:id COMA NUMERO:num
+    PARENTESIS_DER
 {:
-    java.util.ArrayList<Object> arr = (java.util.ArrayList<Object>)symtab.get($3);
-    System.out.println(arr.get($5));
-:}
-;
+    java.util.ArrayList<Object> arr = (java.util.ArrayList<Object>) symtab.get(id);
+    System.out.println(arr.get(num));
+:};
 
 inst_eliminar ::= ELIMINAR
-PARENTESIS_IZQ 
-IDENTIFICADOR COMA NUMERO
-PARENTESIS_DER
+    PARENTESIS_IZQ
+    IDENTIFICADOR:id COMA NUMERO:num
+    PARENTESIS_DER
 {:
-    java.util.ArrayList<Object> l = (java.util.ArrayList<Object>)symtab.get($3);
-    l.remove((int)$5);
-:}
-;
+    java.util.ArrayList<Object> l = (java.util.ArrayList<Object>) symtab.get(id);
+    l.remove((int) num);
+:};
 
 inst_insertar ::= INSERTAR
-PARENTESIS_IZQ
-IDENTIFICADOR COMA x COMA NUMERO
-PARENTESIS_DER
+    PARENTESIS_IZQ
+    IDENTIFICADOR:id COMA x:idx COMA NUMERO:num
+    PARENTESIS_DER
 {:
-    java.util.ArrayList<Object> l = (java.util.ArrayList<Object>)symtab.get($3);
-    int pos = $7;
-    Object val = $5;
-    
-    // Resolver referencia si es variable
-    if(val instanceof String && symtab.containsKey(val)) {
+    java.util.ArrayList<Object> l = (java.util.ArrayList<Object>) symtab.get(id);
+    int pos = num;
+    Object val = idx;
+    if (val instanceof String && symtab.containsKey(val)) {
         val = symtab.get(val);
     }
-    
     l.set(pos, val);
-:}
-;
+    symtab.put(id,l);
+:};
 
 inst_ver ::= VER
     PARENTESIS_IZQ
-    IDENTIFICADOR
+    IDENTIFICADOR:id
     PARENTESIS_DER
-    {:
-    java.util.ArrayList<Object> l = (java.util.ArrayList<Object>) symtab.get($3);
-
-    for (int i = 0; i < l.size(); i++) {
-        Object elemento = l.get(i);
-        if (elemento instanceof Integer && ((Integer)elemento) == 0) break;
+{:
+    java.util.ArrayList<Object> l = (java.util.ArrayList<Object>) symtab.get(id);
+    for (Object elemento : l) {
         System.out.print(elemento + " ");
     }
     System.out.println();
-    :}
-;
+:};
 
-x ::= ID_VALOR {: RESULT = $1; :}
-    | NUMERO {: RESULT = $1; :}
-;
+x ::= IDVALOR:idv {: RESULT = idv; :}
+    | NUMERO:num {: RESULT = num; :};

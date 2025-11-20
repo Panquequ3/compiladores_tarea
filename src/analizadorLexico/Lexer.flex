@@ -2,20 +2,16 @@ package analizadorLexico;
 import java.io.*;
 import java_cup.runtime.Symbol;
 
-
 /* ==================== Declaraciones JFlex ==================== */
-/* Define las directivas de JFlex */
 %%
-%class Analizador /* Define el nombre de la clase generada */
+%class Analizador
 %unicode
-%public /* Define la clase como publica */
-%cup /* Tipo de dato que retornan las acciones */
-%line /* contador de lineas (Guarda el número de línea actual donde se encontró el token) */
-%column /* Habilita contador de columnas (Guarda la posición en la línea actual) */
-		/* line y column sirven para el MANEJO DE ERRORES precisos */
+%public
+%cup
+%line
+%column
 
-/*Constantes*/
-/* Definición de expresiones regulares */
+/* Constantes */
 DIGITO  = [0-9]
 LETRA   = [a-zA-Z]
 ESPACIO = [ \t\r\n]+
@@ -24,7 +20,7 @@ ESPACIO = [ \t\r\n]+
 
 /* ==================== Reglas léxicas ==================== */
 
-// Palabras clave primero
+// Palabras clave
 "PARTIR"      { return new Symbol(sym.PARTIR); }
 "CREAR"       { return new Symbol(sym.CREAR); }
 "INSERTAR"    { return new Symbol(sym.INSERTAR); }
@@ -34,9 +30,9 @@ ESPACIO = [ \t\r\n]+
 "FINALIZAR"   { return new Symbol(sym.FINALIZAR); }
 "VER"         { return new Symbol(sym.VER); }
 
-// Identificadores (no coincide con palabras clave)
-L({LETRA}*{DIGITO}+)   { return new Symbol(sym.IDENTIFICADOR, yytext()); }
-{LETRA} ({LETRA}|{DIGITO})* { return new Symbol(sym.ID_VALOR, yytext()); }
+// Identificadores
+L{LETRA}*{DIGITO}+   { return new Symbol(sym.IDENTIFICADOR, yytext()); } // Identificadores de listas
+{LETRA}({LETRA}|{DIGITO})* { return new Symbol(sym.IDVALOR, yytext()); } // Identificadores generales
 
 // Números
 {DIGITO}+   { return new Symbol(sym.NUMERO, Integer.parseInt(yytext())); }
@@ -53,11 +49,8 @@ L({LETRA}*{DIGITO}+)   { return new Symbol(sym.IDENTIFICADOR, yytext()); }
 // Fin de archivo
 <<EOF>>     { return new Symbol(sym.EOF); }
 
-
 // Cualquier otro caracter
 . { 
     System.err.println("Caracter ilegal: " + yytext());
     return new Symbol(sym.DESCONOCIDO, yytext());
 }
-
-
