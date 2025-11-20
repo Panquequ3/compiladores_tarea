@@ -3,11 +3,25 @@ import java_cup.runtime.*;
 
 parser code {:
     public static void main(String[] args) throws Exception {
-        Analizador lexer = new Analizador(new java.io.InputStreamReader(System.in));
-        Parser parser = new Parser(lexer);
-        parser.parse();
+        java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(System.in));
+        String linea;
+
+        System.out.println("Modo interactivo: escribe tus instrucciones. FINALIZAR para salir.");
+        while (true) {
+            System.out.print("> ");
+            linea = br.readLine();
+            if (linea == null || linea.trim().equalsIgnoreCase("FINALIZAR")) break;
+            if (linea.trim().isEmpty()) continue;
+
+            // Lexer y parser temporal solo para esta línea
+            Analizador lexerLinea = new Analizador(new java.io.StringReader(linea));
+            Parser parserLinea = new Parser(lexerLinea);
+            parserLinea.parse();
+        }
+        System.out.println("Programa terminado.");
     }
 :};
+
 
 scan with {:
     return getScanner().next_token();
@@ -21,13 +35,30 @@ terminal String IDENTIFICADOR; // Identificadores de listas
 terminal String IDVALOR;       // Identificadores generales
 terminal Integer NUMERO;
 
-nonterminal comando, inst, inst_item, inst_asign, inst_crear, inst_dato, inst_eliminar, inst_insertar, inst_ver, x;
+nonterminal comando, inst, inst_item, inst_asign, inst_crear, inst_dato;
+nonterminal inst_eliminar, inst_insertar, inst_ver, x;
+
+// -----------------
+
+//Se usa este de manera temporal para poder trabajar
+//en lineas y que se ejecute
 
 start with comando;
 
 comando ::= PARTIR
     | inst
     | FINALIZAR;
+
+// --------------
+
+// Este es el original que funciona unicamente
+// al ingresar todo el codigo (hay que modificar el main para que sea asi)
+/*
+start with S;
+
+S ::= PARTIR inst FINALIZAR
+
+*/
 
 inst ::= inst inst_item
        | inst_item;

@@ -173,9 +173,22 @@ public class Parser extends java_cup.runtime.lr_parser {
 
 
     public static void main(String[] args) throws Exception {
-        Analizador lexer = new Analizador(new java.io.InputStreamReader(System.in));
-        Parser parser = new Parser(lexer);
-        parser.parse();
+        java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(System.in));
+        String linea;
+
+        System.out.println("Modo interactivo: escribe tus instrucciones. FINALIZAR para salir.");
+        while (true) {
+            System.out.print("> ");
+            linea = br.readLine();
+            if (linea == null || linea.trim().equalsIgnoreCase("FINALIZAR")) break;
+            if (linea.trim().isEmpty()) continue;
+
+            // Lexer y parser temporal solo para esta línea
+            Analizador lexerLinea = new Analizador(new java.io.StringReader(linea));
+            Parser parserLinea = new Parser(lexerLinea);
+            parserLinea.parse();
+        }
+        System.out.println("Programa terminado.");
     }
 
 
@@ -367,8 +380,14 @@ class CUP$Parser$actions {
 		Object idx8 = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
 		
     java.util.ArrayList<Object> params = new java.util.ArrayList<>();
-    params.add(idx1); params.add(idx2); params.add(idx3); params.add(idx4);
-    params.add(idx5); params.add(idx6); params.add(idx7); params.add(idx8);
+    params.add(((idx1 instanceof String && Main.symtab.containsKey(idx1)) ? Main.symtab.get(idx1) : idx1)); 
+    params.add(((idx2 instanceof String && Main.symtab.containsKey(idx2)) ? Main.symtab.get(idx2) : idx2)); 
+    params.add(((idx3 instanceof String && Main.symtab.containsKey(idx3)) ? Main.symtab.get(idx3) : idx3));
+    params.add(((idx4 instanceof String && Main.symtab.containsKey(idx4)) ? Main.symtab.get(idx4) : idx4));
+    params.add(((idx5 instanceof String && Main.symtab.containsKey(idx5)) ? Main.symtab.get(idx5) : idx5));
+    params.add(((idx6 instanceof String && Main.symtab.containsKey(idx6)) ? Main.symtab.get(idx6) : idx6));
+    params.add(((idx7 instanceof String && Main.symtab.containsKey(idx7)) ? Main.symtab.get(idx7) : idx7));
+    params.add(((idx8 instanceof String && Main.symtab.containsKey(idx8)) ? Main.symtab.get(idx8) : idx8));
     Main.symtab.put(id, params);
 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("inst_crear",4, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-19)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -405,7 +424,9 @@ class CUP$Parser$actions {
 		Integer num = (Integer)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
 		
     java.util.ArrayList<Object> l = (java.util.ArrayList<Object>) Main.symtab.get(id);
-    l.remove((int) num);
+    l.remove(num);
+    l.add(0);
+    Main.symtab.put(id,l);
 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("inst_eliminar",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-5)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -421,18 +442,25 @@ class CUP$Parser$actions {
 		int idxleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).left;
 		int idxright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).right;
 		Object idx = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
-		int numleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
-		int numright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
-		Integer num = (Integer)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
+		int posleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
+		int posright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
+		Integer pos = (Integer)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
 		
     java.util.ArrayList<Object> l = (java.util.ArrayList<Object>) Main.symtab.get(id);
-    int pos = num;
-    Object val = idx;
-    if (val instanceof String && Main.symtab.containsKey(val)) {
-        val = Main.symtab.get(val);
+
+    Object val = (idx instanceof String && Main.symtab.containsKey(idx)) ? Main.symtab.get(idx) : idx;
+
+    if (pos < 0 || pos > 7) {
+        System.out.println("Error: posición fuera de rango (0-7)");
+    } else {
+        if((int)l.get(7) == 0){
+            l.remove(7);
+            l.add(pos,val);
+        }
+        else System.out.println("Error");
     }
-    l.set(pos, val);
-    Main.symtab.put(id,l);
+
+    Main.symtab.put(id, l);
 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("inst_insertar",7, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-7)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -448,7 +476,10 @@ class CUP$Parser$actions {
 		
     java.util.ArrayList<Object> l = (java.util.ArrayList<Object>) Main.symtab.get(id);
     for (Object elemento : l) {
-        System.out.print(elemento + " ");
+        int val = (int) ((elemento instanceof String && Main.symtab.containsKey(elemento)) ? Main.symtab.get(elemento) : elemento);
+        if(val == 0) break;
+        System.out.print(val + " ");
+
     }
     System.out.println();
 

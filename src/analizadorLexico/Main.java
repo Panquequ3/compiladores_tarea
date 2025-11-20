@@ -1,57 +1,48 @@
 package analizadorLexico;
 
-import java.io.*;
-import java_cup.runtime.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 public class Main {
-
-    public static java.util.HashMap<String,Object> symtab = new java.util.HashMap<>();
+    public static java.util.HashMap<String, Object> symtab = new java.util.HashMap<>();
 
     public static void main(String[] args) throws Exception {
-        PipedReader reader = new PipedReader();
-        PipedWriter writer = new PipedWriter(reader);
-
-        Analizador lexer = new Analizador(reader);
-        Parser parser = new Parser(lexer);
-
-        Thread parserThread = new Thread(() -> {
-            try {
-                parser.parse();
-            } catch (Exception e) {
-                System.err.println("Error en parser: " + e.getMessage());
-            }
-        });
-        parserThread.start();
-
-        BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
-
-        boolean iniciado = false;
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String linea;
+        boolean yaPartio = false;
 
-        System.out.println("Intérprete interactivo continuo. La primera instrucción debe ser PARTIR. FINALIZAR para salir.");
+        System.out.println("Empieza a Codificar");
 
-        while ((linea = console.readLine()) != null) {
+        while (true) {
+            System.out.print("> ");
+            linea = br.readLine();
+            if (linea == null) break; // EOF
             linea = linea.trim();
-
-            if (!iniciado) {
-                if (!linea.equalsIgnoreCase("PARTIR")) {
-                    System.out.println("Error: la primera instrucción debe ser PARTIR.");
+            if (linea.isEmpty()) continue;
+            
+            if(!yaPartio) {
+                if(linea.equalsIgnoreCase("PARTIR")) {
+                    yaPartio = true;
+                } else {
+                    System.out.println("Error: debes comenzar con PARTIR");
                     continue;
                 }
-                iniciado = true;
-                System.out.println("PARTIR aceptado. Puedes ejecutar comandos.");
+            } else if(linea.equalsIgnoreCase("FINALIZAR")) {
+                break;
             }
 
-            writer.write(linea + "\n");
-            writer.flush();
-
-            if (linea.equalsIgnoreCase("FINALIZAR")) {
-                writer.close();
-                break;
+            try {
+                // Lexer y parser temporal solo para esta línea
+                Analizador lexerLinea = new Analizador(new java.io.StringReader(linea));
+                Parser parserLinea = new Parser(lexerLinea);
+                parserLinea.parse();
+            } catch (Exception e) {
+                System.out.println("Error en la instrucción: " + e.getMessage());
+                System.out.println("Termino por error...");
+                return;
             }
         }
 
-        parserThread.join();
-        System.out.println("Intérprete terminado.");
+        System.out.println("Programa terminado.");
     }
 }
