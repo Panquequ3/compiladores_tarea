@@ -40,7 +40,7 @@ javac -d bin src/analizadorLexico/*.java
 
 Ademas para trabajar con el Analizador sintactico se tiene que usar
 ```cmd
-java -jar java-cup-11b.jar -parser Parser -symbols Sym src/analizadorLexico/Parser.cup
+java -jar java-cup-11b.jar -parser Parser -symbols Sym -destdir src/analizadorLexico src/analizadorLexico/Parse.cup
 ```
 
 ```cmd
