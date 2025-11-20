@@ -2,13 +2,10 @@ package analizadorLexico;
 import java_cup.runtime.*;
 
 parser code {:
-    java.util.HashMap<String, Object> symtab = new java.util.HashMap<>();
-
     public static void main(String[] args) throws Exception {
         Analizador lexer = new Analizador(new java.io.InputStreamReader(System.in));
         Parser parser = new Parser(lexer);
         parser.parse();
-        System.out.println("Parseo Completo");
     }
 :};
 
@@ -24,11 +21,13 @@ terminal String IDENTIFICADOR; // Identificadores de listas
 terminal String IDVALOR;       // Identificadores generales
 terminal Integer NUMERO;
 
-nonterminal S, inst, inst_item, inst_asign, inst_crear, inst_dato, inst_eliminar, inst_insertar, inst_ver, x;
+nonterminal comando, inst, inst_item, inst_asign, inst_crear, inst_dato, inst_eliminar, inst_insertar, inst_ver, x;
 
-start with S;
+start with comando;
 
-S ::= PARTIR inst FINALIZAR;
+comando ::= PARTIR
+    | inst
+    | FINALIZAR;
 
 inst ::= inst inst_item
        | inst_item;
@@ -42,8 +41,8 @@ inst_item ::= inst_asign
 
 inst_asign ::= ASIGNAR IDVALOR:idn IGUAL x:idx 
 {:
-    Object val4 = (idx instanceof String && symtab.containsKey(idx)) ? symtab.get(idx) : idx;
-    symtab.put(idn, val4);
+    Object val4 = (idx instanceof String && Main.symtab.containsKey(idx)) ? Main.symtab.get(idx) : idx;
+    Main.symtab.put(idn, val4);
 :};
 
 inst_crear ::= CREAR
@@ -54,7 +53,7 @@ inst_crear ::= CREAR
     java.util.ArrayList<Object> params = new java.util.ArrayList<>();
     params.add(idx1); params.add(idx2); params.add(idx3); params.add(idx4);
     params.add(idx5); params.add(idx6); params.add(idx7); params.add(idx8);
-    symtab.put(id, params);
+    Main.symtab.put(id, params);
 :};
 
 inst_dato ::= DATO
@@ -62,7 +61,7 @@ inst_dato ::= DATO
     IDENTIFICADOR:id COMA NUMERO:num
     PARENTESIS_DER
 {:
-    java.util.ArrayList<Object> arr = (java.util.ArrayList<Object>) symtab.get(id);
+    java.util.ArrayList<Object> arr = (java.util.ArrayList<Object>) Main.symtab.get(id);
     System.out.println(arr.get(num));
 :};
 
@@ -71,7 +70,7 @@ inst_eliminar ::= ELIMINAR
     IDENTIFICADOR:id COMA NUMERO:num
     PARENTESIS_DER
 {:
-    java.util.ArrayList<Object> l = (java.util.ArrayList<Object>) symtab.get(id);
+    java.util.ArrayList<Object> l = (java.util.ArrayList<Object>) Main.symtab.get(id);
     l.remove((int) num);
 :};
 
@@ -80,14 +79,14 @@ inst_insertar ::= INSERTAR
     IDENTIFICADOR:id COMA x:idx COMA NUMERO:num
     PARENTESIS_DER
 {:
-    java.util.ArrayList<Object> l = (java.util.ArrayList<Object>) symtab.get(id);
+    java.util.ArrayList<Object> l = (java.util.ArrayList<Object>) Main.symtab.get(id);
     int pos = num;
     Object val = idx;
-    if (val instanceof String && symtab.containsKey(val)) {
-        val = symtab.get(val);
+    if (val instanceof String && Main.symtab.containsKey(val)) {
+        val = Main.symtab.get(val);
     }
     l.set(pos, val);
-    symtab.put(id,l);
+    Main.symtab.put(id,l);
 :};
 
 inst_ver ::= VER
@@ -95,7 +94,7 @@ inst_ver ::= VER
     IDENTIFICADOR:id
     PARENTESIS_DER
 {:
-    java.util.ArrayList<Object> l = (java.util.ArrayList<Object>) symtab.get(id);
+    java.util.ArrayList<Object> l = (java.util.ArrayList<Object>) Main.symtab.get(id);
     for (Object elemento : l) {
         System.out.print(elemento + " ");
     }

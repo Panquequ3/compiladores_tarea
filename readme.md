@@ -90,6 +90,7 @@ src/analizadorLexico/Parser.java
 src/analizadorLexico/sym.java
 ```
 
+En caso de realizar cambios dentro de Parse.cup, es necesario eliminar estos datos para poder ver los cambios.
 
 ## 3. Compilar todos los archivos .java
 
