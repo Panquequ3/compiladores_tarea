@@ -32,8 +32,9 @@ public class Main {
                     System.out.println("Error: se esperaba una instruccion o FINALIZAR");
                     return;
                 }
-            } else if(linea.equalsIgnoreCase("FINALIZAR")) {
+                if(linea.equalsIgnoreCase("FINALIZAR")) {
                 break;
+                }
             }
 
             try {

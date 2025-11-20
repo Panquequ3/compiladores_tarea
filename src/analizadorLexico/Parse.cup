@@ -108,7 +108,7 @@ inst_eliminar ::= ELIMINAR
     PARENTESIS_DER
 {:
     java.util.ArrayList<Object> l = (java.util.ArrayList<Object>) Main.symtab.get(id);
-    l.remove(num);
+    l.remove((int)num);
     l.add(0);
     Main.symtab.put(id,l);
 :};

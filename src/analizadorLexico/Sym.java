@@ -6,7 +6,7 @@
 package analizadorLexico;
 
 /** CUP generated class containing symbol constants. */
-public class Sym {
+public class sym {
   /* terminals */
   public static final int CREAR = 3;
   public static final int INSERTAR = 4;

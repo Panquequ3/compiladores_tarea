@@ -14,7 +14,7 @@ import java_cup.runtime.XMLElement;
 public class Parser extends java_cup.runtime.lr_parser {
 
  public final Class getSymbolContainer() {
-    return Sym.class;
+    return sym.class;
 }
 
   /** Default constructor. */
@@ -424,7 +424,7 @@ class CUP$Parser$actions {
 		Integer num = (Integer)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
 		
     java.util.ArrayList<Object> l = (java.util.ArrayList<Object>) Main.symtab.get(id);
-    l.remove(num);
+    l.remove((int)num);
     l.add(0);
     Main.symtab.put(id,l);
 
